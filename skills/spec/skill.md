@@ -1,69 +1,90 @@
 ---
 name: spec
 description: A specification skill to shape and map out a feature to be built.
-version: 1.0
+version: 2.0
+contact: jim
 ---
 
 # Spec
 
-Using the analyst agent you are to create a task file that describes the requirement that you are being asked to spec. You will aim to keep a single task in a single file and use a separate, backlog.md, file for any other tasks and future requirements.
+You create a task file that precisely describes a requirement, ready for the ralphy queue. You do this by invoking the Analyst agent (`ralphyanalyst.agent.md`) to hold a structured conversation with the user.
 
-You will be used when the user asks to help "spec" something or to "create me a task" or "capture this idea".  You will the interact with the user to build up the specification that can be passed to other agents to implement.
+You are invoked when the user asks to "spec" something, "create a task", or "capture this idea".
 
-If the user simply states "spec" with no further information review `.docs\backlog.md` for a list of pending ideas.  Present the ideas to the user and ask them to select which of the backlog items you should proceed to spec.  If one is selected and fully specced then remove it from the backlog.
+## On Start
 
+If the user types `/spec` with no further information, check `docs/backlog.md` for pending ideas. Present the items and ask the user to select one. Once selected and fully specced, remove it from the backlog.
 
+If a description was provided, begin immediately with the Analyst.
 
-## Iterate
+## Conversation
 
-You should attempt to create the spec from the knowledge that you have but then have an interactive conversation with the user to ensure that you capture use cases and edge cases and provide as much detail as possible to the planner agent that will read this.  
+Invoke the **Analyst agent** to drive the conversation. The Analyst works through structured phases (Listen → Clarify → Challenge → Draft → Confirm) and will not produce the task file until the user has explicitly approved a draft. Do not shortcut this process.
 
-Check for all edge cases with the user first and come up with creative ideas that might enhance the concept.
+The Analyst's job is to define *what* must be true when the feature is done — not *how* to build it. Do not let implementation details drive the spec.
 
+## Reference Numbers
 
+Each task file must carry a unique, incrementing reference number. Before writing the file, read all existing files in `docs/tasks/` to find the highest `reference:` value and increment by one. Start at 1 if no tasks exist yet.
 
 ## Output
 
-The output will be a single task file relating to the task at hand, with updates to backlog.md if there are other unrelated ideas that come out of the analysis session.
+The Analyst produces a single task file in `docs/tasks/`. Use a short kebab-case filename (two to four words). Set `status: draft` while the conversation is in progress; update to `status: todo` when the user confirms the spec is complete.
 
-# Output Format
+Any unrelated ideas or future requirements that surface during the session go to `docs/backlog.md`, not the task file. Use this format:
 
-Produce only:
+```markdown
+- [ ] **<Short title>** — <One sentence description.>
+```
 
-A detailed markdown document in the `docs\tasks` folder which is in the change file format as described below.  
+## Task File Format
 
-## Change File Format
-
-Changes live as markdown files in `docs/tasks/` with a `status` field in their YAML frontmatter. The body is freeform markdown describing the problem and acceptance criteria.  The filename should be short and contain only one or two words to reference the problem.  Each ticket should contain a unique incrementing reference number, starting at 1. Review all of the existing tasks to identify the next reference number.
-
-A sample ticket looks like this
+Task files live in `docs/tasks/` as markdown with YAML frontmatter. Every task file must use this format exactly — do not omit sections, write "None" if a section does not apply.
 
 ```markdown
 ---
 status: todo
-title: short title describing the change
-created: 2026-04-06
-priority: high
-reference: 1
+title: <Short imperative title — e.g. "Add search box to skills dashboard">
+created: <YYYY-MM-DD>
+priority: <high | medium | low>
+reference: <incrementing integer>
 ---
 # Reference
-Single line describing the change starting with the reference number
+<Reference number + one-line description of the change>
 
 # What
-One paragraph describing what the user should see when this is done.
+<One paragraph describing what the user sees or what the system does when this is complete. Observable outcomes only.>
 
 # Why
-Optional context — link to the request, ticket, or rationale.
+<One paragraph explaining the motivation — the user's goal, the pain being solved, or the opportunity. Include linked tickets or prior context if available.>
 
 # Acceptance
-- Bullet list of concrete acceptance criteria
-- Anything that must hold true before this can be marked done
+
+- <Concrete, testable criterion. Given/When/Then format preferred.>
+- <...>
+
+# Out of Scope
+
+- <Anything that might look related but is explicitly excluded.>
+- <...>
+
+# Assumptions & Constraints
+
+- <Each assumption that, if wrong, would invalidate the spec.>
+- <Performance, security, or compatibility constraints.>
+- <...>
 ```
 
 **Status values:**
 
-- `draft` - While you are creating the file and it is not ready to be worked on
-- `todo`  — ready to pick up
-- `doing` — claimed by an engineer (you, or a previous one who didn't finish)
-- `done`  — complete
+- `draft` — being written; not ready for ralph to pick up
+- `todo` — confirmed and ready to pick up
+- `doing` — claimed by an engineer or agent
+- `done` — complete
 - `blocked` — needs human input; skip
+
+## Handoff
+
+When the task file is written and status is set to `todo`, confirm its location:
+
+> **Spec written to `docs/tasks/<filename>.md`. Ready for the ralphy queue.**
