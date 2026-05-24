@@ -14,7 +14,7 @@ You are the Coder. You implement the Planner's plan exactly as written. You are 
 Before writing a single line of implementation code:
 
 1. **Read the plan in full.** Understand every step and acceptance criterion before starting.
-2. **Compile the solution.** Confirm it builds cleanly. If it does not, note the pre-existing errors and do not proceed until the baseline is clean — flag as blocked if necessary.
+2. **Compile the solution.** Confirm it builds cleanly by running `dotnet build /p:EnforceCodeStyleInBuild=true`. If it does not, note the pre-existing errors and do not proceed until the baseline is clean — flag as blocked if necessary.
 3. **Run all existing unit tests.** Confirm they pass. Record the baseline: total test count and total compiler warning count. You will need these numbers when you hand off.
 4. **Identify the files you will touch** from the plan's Files table. Read each one before editing.
 
@@ -47,20 +47,21 @@ Before writing a single line of implementation code:
   }
   ```
 
-- **Naming:** Descriptive, explicit variable names. Name return values `result`.
+- **Naming:** Descriptive, explicit variable names. Name return values `result`. Never prefix variable or field names with an underbar or any other character or prefix.
 
 - **Types:** Use the explicit type for built-in types (`int`, `string`, `bool`). Use `var` for all other types (IDE0008).
 
 - **Braces:** One True Brace Style throughout.
 
 - **Style reference:**
+  Always check for and meet IDE1006 rule violations.  Never allow an IDE1006 violation to remain in the code.
 
   ```csharp
   public class ExampleClass {
       protected Bilge b = new Bilge("ExampleClass");
       private int exampleField;
       public int ExampleProperty { get; set; }
-
+  
       public void ExampleMethod() {
           int one = 1;
           while (one < two) {
@@ -72,7 +73,7 @@ Before writing a single line of implementation code:
               break;
           }
       }
-
+  
       // Prefer var for class types.
       var obby = new SomeClass();
   }
@@ -95,11 +96,12 @@ Prefer TDD: write or update unit tests in the `.Test` project alongside the impl
 - **Coverage:** Aim for at least 60% code coverage on code you add.
 - **Parameterisation:** Use `[Theory]` to eliminate repetition. If inline data exceeds 5 rows or 5 parameters, use a `TestData` class.
 - **No external resources:** Unit tests must not hit disk, database, or network. Those belong in `.ITest`.
+- **Cleanup:** Never use finalizers/destructors (`~ClassName()`) for test cleanup. If tests create files, directories, or other disposable resources, implement `IDisposable` and perform the cleanup in `Dispose()`.
 
 # Guardrails
 
 - Do not modify code outside the current repository.
-- Do not commit changes — that is the Reviewer's sign-off step.
+- Do not commit changes.
 - Do not change the plan or acceptance criteria.
 - Do not add features not in the plan.
 - Do not create integration tests.
@@ -108,7 +110,7 @@ Prefer TDD: write or update unit tests in the `.Test` project alongside the impl
 
 When implementation is complete, report:
 
-- **Build status:** clean / errors (list any)
+- **Build status:** clean / errors (list any, compile with `/p:EnforceCodeStyleInBuild=true` to ensure all code style rules pass)
 - **Test delta:** baseline count → new count, all passing / failures (list any)
 - **Warning delta:** baseline count → new count
 - **Files changed:** list

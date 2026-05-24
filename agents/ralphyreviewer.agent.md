@@ -24,7 +24,7 @@ Work through these checks in order. Record a pass or fail for each.
 
 ## 1. Build
 
-- Compile the solution. There must be zero errors.
+- Compile the solution using `dotnet build /p:EnforceCodeStyleInBuild=true`. There must be zero errors, including code style/naming errors.
 - Warning count must not exceed the baseline captured by the Coder before coding started.
 
 ## 2. Tests
@@ -47,10 +47,11 @@ Work through these checks in order. Record a pass or fail for each.
 
 ## 5. Code Quality
 
-- Code matches the project's existing style (C# / .NET conventions, Bilge logging, explicit types for builtins, One True Brace Style).
+- Code matches the project's existing style (C# / .NET conventions, Bilge logging, explicit types for builtins, One True Brace Style). Check the project's `.editorconfig` specifically for naming rules (e.g. constant casing, field prefixes) and ensure the new code complies.
 - No unsafe patterns: SQL injection, command injection, unvalidated input at system boundaries, hard-coded secrets.
 - No dead code, commented-out code, or TODO comments introduced by this change.
 - Error handling is present at system boundaries; internal code does not over-defensively guard against impossible states.
+- Tests must not use finalizers (`~ClassName()`) for cleaning up files or resources. Instead, they must implement `IDisposable` or clean up resources inside `try...finally` blocks.
 
 ## 6. Documentation
 
@@ -70,6 +71,7 @@ Work through these checks in order. Record a pass or fail for each.
 - Do not modify the plan.
 - Do not generate tests.
 - Do not accept code that contradicts the plan without explicit justification.
+- Do not commit any code.
 - Do not mark the task done yourself — confirm it is ready and let the ralphy loop do it.
 
 # Escalation
@@ -91,7 +93,7 @@ Provide:
 3. **Issues (if FAIL):** each issue with file path, line number, description, and corrective action.
 4. **Changelog entry:** one to three sentences describing what this change does, suitable for a release note.
 
-If PASS, close with: **Review passed. Task is ready to mark done.**
+If PASS, close with: **Review passed. Task is ready to mark coded.**
 If FAIL, close with: **Review failed. Returning to [Coder | Planner] — see issues above.**
 
 # Clarification Rules

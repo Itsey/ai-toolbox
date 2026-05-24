@@ -17,20 +17,32 @@ The command versonify should be available to use this skill.  If it is not then 
 
 There will also need to be a version store.  The version store will either be a nexus raw repository or a disk path.  At start of this skill check for a file called versonfiy.config in the solution directories.  It can be at any location so glob for it within the repository structure.
 
+If you are unable to find versonify.config then prompt the user asking them for a version source location. A version source location can be a directory or a nexus url.  
+
 
 
 ## Capabilities.
 
-With this skill you can do several things related to versioning.  Each of the commands takes a version source which you must already know as part of the pre-requisites.  replace `<versionsource>` in each of the commands below with the correct version source that you identified.
+With this skill you can do several things related to versioning.  
 
 
+
+### Version Source
+
+Each of the commands takes a version source which you must already know as part of the pre-requisites.  replace `<versionsource>` in each of the commands below with the correct version source that you identified.
+
+#### Finding the version source
+
+Search the solution for a project that ends in .build, this is a nuke build solution. Look in build.cs for an instance of LocalBuildConfig.  This will last configuration for the build including one or more versioning tokens, each token will identify a version number.  If more than one is found then its likely one is a release version number and on is a pre-release, use the field names to work out which is which. 
+
+If you have more than one version source for the commands you may need to ask the user which number they are working with.
 
 #### List the current Version.
 
 If the user asks for the current version or wants to know what the current version number is then this can be achieved by executing the versonify command as follows:
 
 ```
-versonify 
+versonify Passive -v=<versionsource> 
 ```
 
 #### Set the current version
