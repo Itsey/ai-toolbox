@@ -101,17 +101,17 @@ When any agent finds an issue outside the current task scope, they add to `docs/
 
 ## State Files
 
-Ralph persists intermediate state to `.ralphy/` in the project root so that recovery after a crash is deterministic rather than guesswork.
+Ralph persists intermediate state to `.ralphy.donotcommit/` in the project root so that recovery after a crash is deterministic rather than guesswork.
 
 | File | Written | Contains |
 |------|---------|----------|
-| `.ralphy/current-task.md` | On Start | Path to the claimed task file and the task slug |
-| `.ralphy/current-plan.md` | After Stage 1 | Full `<PLAN>` verbatim |
-| `.ralphy/audit.md` | After each stage | Timestamped summary of what each agent did and decided |
+| `.ralphy.donotcommit/current-task.md` | On Start | Path to the claimed task file and the task slug |
+| `.ralphy.donotcommit/current-plan.md` | After Stage 1 | Full `<PLAN>` verbatim |
+| `.ralphy.donotcommit/audit.md` | After each stage | Timestamped summary of what each agent did and decided |
 
-`.ralphy/` should be in `.gitignore`. These files are scratch state, not source of truth.
+`.ralphy.donotcommit/` should be in `.gitignore`. These files are scratch state, not source of truth.
 
-On a clean exit (Mark Done or blocked), delete `.ralphy/current-task.md` and `.ralphy/current-plan.md`. Leave `audit.md` intact — it is useful post-run.
+On a clean exit (Mark Done or blocked), delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`. Leave `audit.md` intact — it is useful post-run.
 
 ## On Start
 
@@ -121,14 +121,14 @@ On a clean exit (Mark Done or blocked), delete `.ralphy/current-task.md` and `.r
 4. **Look for a `doing` task first.** If one exists, go to Recovery before picking anything new.
 5. **Pick the next task** (see selection rules above), or if an argument was passed (a filename slug like `add-search-box`), pick that specific task — still validate it is `todo` or `doing`.  If a reference id was passed as an argument then use that.
 6. **Claim the task:** edit frontmatter `status: todo` → `status: doing`. Do not commit this alone.
-7. **Write `.ralphy/current-task.md`** with the task file path and slug.
+7. **Write `.ralphy.donotcommit/current-task.md`** with the task file path and slug.
 
 ## Recovery (a `doing` task exists)
 
 A previous run claimed this task and didn't finish.
 
 1. Read the task file in full, including any `## Notes`.
-2. Check for `.ralphy/current-plan.md` — if it exists, the Planner already completed; skip Stage 1 and use the saved plan as `<PLAN>`.
+2. Check for `.ralphy.donotcommit/current-plan.md` — if it exists, the Planner already completed; skip Stage 1 and use the saved plan as `<PLAN>`.
 3. Run `git diff` and `git status`.
 4. Run all unit tests (`.Test` projects only — not integration tests).
 
@@ -165,9 +165,9 @@ Invoke the **Planner** sub-agent with this context:
 
 **If the plan notes the task is too large:** split the task file into multiple smaller files in `docs/tasks/`, mark the original `done` with a note explaining the split, and exit. The split tasks will be picked up in subsequent runs.
 
-Capture the Planner's full output as **`<PLAN>`**. Save it verbatim to `.ralphy/current-plan.md`.
+Capture the Planner's full output as **`<PLAN>`**. Save it verbatim to `.ralphy.donotcommit/current-plan.md`.
 
-Append to `.ralphy/audit.md`:
+Append to `.ralphy.donotcommit/audit.md`:
 ```
 ## Stage 1 — Plan [<timestamp>]
 Status: complete
@@ -199,7 +199,7 @@ Capture the validated output as **`<CODER_REPORT>`**.
 
 **If the Coder escalates to blocked:** revert all implementation changes (`git checkout .` and `git clean -fd`), append `## Notes`, flip status to `blocked`, commit the task file alone (status record only), and exit.
 
-Append to `.ralphy/audit.md`:
+Append to `.ralphy.donotcommit/audit.md`:
 ```
 ## Stage 2 — Build [<timestamp>] (cycle <N>)
 Build: <clean|errors>
@@ -226,7 +226,7 @@ Capture the Tester's full output as **`<TEST_REPORT>`**.
 
 **If the Tester escalates to Planner:** surface the ambiguity to the user (Planner cannot re-plan mid-loop without human input). Pause, get the answer, re-invoke Planner if needed, then restart from Stage 2.
 
-Append to `.ralphy/audit.md`:
+Append to `.ralphy.donotcommit/audit.md`:
 ```
 ## Stage 3 — Test [<timestamp>] (cycle <N>)
 Acceptance criteria covered: <N>/<total>
@@ -258,7 +258,7 @@ Invoke the **Reviewer** sub-agent with this context:
 
 **If the Reviewer verdict is PASS:** proceed to Mark `coded`.
 
-Append to `.ralphy/audit.md`:
+Append to `.ralphy.donotcommit/audit.md`:
 ```
 ## Stage 4 — Review [<timestamp>] (cycle <N>)
 Verdict: <PASS|FAIL>
@@ -285,7 +285,7 @@ Task: docs/tasks/<filename>.md
 
 Where `<type>` is one of: `feat` (new feature), `fix` (bug fix), `refactor` (restructuring), `test` (tests only), `chore` (tooling/config).
 
-4. Clean up state files: delete `.ralphy/current-task.md` and `.ralphy/current-plan.md`.
+4. Clean up state files: delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`.
 5. **Exit.** Report to the user: `Done: <task title>. <N> tests passing, <M> warnings. Ready for your review.` Do not pick up the next task automatically.
 
 > **Why one task per invocation?** Each run gets a clean context window and a human checkpoint. Auto-looping compounds blast radius, degrades reasoning quality as context grows, and skips the queue re-prioritisation the user may want to do between tasks. Re-invoke ralphy to continue.
@@ -296,7 +296,7 @@ Where `<type>` is one of: `feat` (new feature), `fix` (bug fix), `refactor` (res
 2. Append `## Notes` to the task file describing what you tried and what needs a human decision.
 3. Flip status to `blocked`.
 4. Commit the task file alone (status record only — no implementation code).
-5. Clean up state files: delete `.ralphy/current-task.md` and `.ralphy/current-plan.md`.
+5. Clean up state files: delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`.
 6. Exit with one line: `Blocked on <task title>. See ## Notes in docs/tasks/<filename>.md.`
 
 ## Scope Discipline
