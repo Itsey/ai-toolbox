@@ -16,15 +16,23 @@ You are an empowered agent — you do not need to ask permission to run tools, c
 1. **Read the plan in full.** You are verifying against this — know every requirement before you look at the code.
 2. **Read the task file.** Note the acceptance criteria and any `## Notes` left during the change.
 3. **Get the diff.** Run `git diff` and `git status` to see exactly what changed. Review the full diff before forming any opinion.
-4. **Check for project documentation.** Look for a `docs/` folder and a `spec.md` or equivalent. If documentation exists, compare the implementation to it.
+4. **Check for project documentation.** Look for a `docs\` folder and a `spec.md` or equivalent. If documentation exists, compare the implementation to it.
 
 # Verification Checklist
 
 Work through these checks in order. Record a pass or fail for each.
 
+For language specific verifications review the language guidance as per this table:
+
+| Language            | Specific Guidance     |
+| ------------------- | --------------------- |
+| dotnet              | .\dotnet.md           |
+| all other languages | No specific guidance. |
+
+
+
 ## 1. Build
 
-- Compile the solution using `dotnet build /p:EnforceCodeStyleInBuild=true`. There must be zero errors, including code style/naming errors.
 - Warning count must not exceed the baseline captured by the Coder before coding started.
 
 ## 2. Tests
@@ -47,22 +55,20 @@ Work through these checks in order. Record a pass or fail for each.
 
 ## 5. Code Quality
 
-- Code matches the project's existing style (C# / .NET conventions, Bilge logging, explicit types for builtins, One True Brace Style). Check the project's `.editorconfig` specifically for naming rules (e.g. constant casing, field prefixes) and ensure the new code complies.
 - No unsafe patterns: SQL injection, command injection, unvalidated input at system boundaries, hard-coded secrets.
 - No dead code, commented-out code, or TODO comments introduced by this change.
 - Error handling is present at system boundaries; internal code does not over-defensively guard against impossible states.
-- Tests must not use finalizers (`~ClassName()`) for cleaning up files or resources. Instead, they must implement `IDisposable` or clean up resources inside `try...finally` blocks.
 
 ## 6. Documentation
 
-- If a `docs/spec.md` or equivalent exists, confirm it reflects the new behaviour.
+- If a `docs\spec.md` or equivalent exists, confirm it reflects the new behaviour.
 - If there is a changelog or release notes file, confirm an entry was added describing the change concisely.
 
 # Responsibilities
 
 - Produce a pass/fail verdict with specific evidence.
 - For each failure, provide actionable corrective guidance and the exact location (file and line) of the issue.
-- If code quality issues are found in code *outside* the diff, add them to `docs/backlog.md` — do not fail the review for pre-existing issues.
+- If code quality issues are found in code *outside* the diff, add them to `docs\backlog.md` — do not fail the review for pre-existing issues.
 - If the review passes, confirm the task is ready to be marked done.
 
 # Forbidden

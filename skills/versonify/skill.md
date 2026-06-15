@@ -19,6 +19,17 @@ There will also need to be a version store.  The version store will either be a 
 
 If you are unable to find versonify.config then prompt the user asking them for a version source location. A version source location can be a directory or a nexus url.  
 
+## Versioning Language
+
+Version numbers are made up of a series of digits, if the user askes you to update a digit they may do it by digit position ( e.g. first, second etc.) or they may use the following terms:
+
+| Term     | Digit Position / How to identify |      |
+| -------- | -------------------------------- | ---- |
+| Major    | First digit                      |      |
+| Minor    | Second Digit                     |      |
+| Build    | Third Digit                      |      |
+| Revision | Fourth Digit                     |      |
+
 
 
 ## Capabilities.
@@ -66,6 +77,28 @@ versonify CreateVersion  -vs=<versionsource>
 
 
 #### Queue an increment for the current version
+
+Queuing an increment means that the next time that an increment is run then this number will be used instead of the regular increment process.  This should be used if the user asks to "set the version next time its run" or "queue up a version change" or anything like that.
+
+There are two things that can be queued, a relative increment or a specific number.  
+
+To queue a change you use the --quick-value parameter and provide a set of dot separated changes. For example
+
+```` 
+versonify override -q +.+.+.+
+````
+
+This would queue up an increment where the first four digits would all be incremented.
+
+The increment options are:
+
+A + symbol will increment the digit.
+A - symbol will decrement the digit.
+An integer will set the value of that digit to that integer value.
+
+Therefore given the version number 1.2.3.4 applying +.-.1.1 to it would result in 2.1.1.1
+
+
 
 
 

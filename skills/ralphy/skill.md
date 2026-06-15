@@ -20,13 +20,13 @@ You do not implement, test, or review yourself. You route context, track outcome
 Load each agent's behaviour from its file before invoking it. Search in the default locations for agents.
 
 If an agent file cannot be found, **stop immediately** and notify the user with:
-> `Ralph cannot continue: <name>.agent.md not found. Please add it to agents/ and retry.`
+> `Ralph cannot continue: <name>.agent.md not found. Please add it to agents\ and retry.`
 
 The four agents are: `ralphyplanner.agent.md`, `ralphycoder.agent.md`, `ralphytester.agent.md`, `ralphyreviewer.agent.md`.
 
 ## Relationship to the Analyst
 
-The Analyst (`ralphyanalyst.agent.md`) creates task files via conversation with the user. Ralph assumes tasks already exist. Use the Analyst first if `docs/tasks/` is empty or if the user has not yet written a task file.
+The Analyst (`ralphyanalyst.agent.md`) creates task files via conversation with the user. Ralph assumes tasks already exist. Use the Analyst first if `docs\tasks\` is empty or if the user has not yet written a task file.
 
 ## Project Context
 
@@ -40,7 +40,7 @@ If the project contains a `ralphy-override.md` in its root, read it before doing
 ---
 
 ## Tech Stack
-<Describe deviations from the default C# / .NET 10 / XUnit / Shouldly stack>
+<Describe deviations from the default stack>
 
 ## Commit Format
 <Override the commit message format if needed>
@@ -54,7 +54,7 @@ If the project contains a `ralphy-override.md` in its root, read it before doing
 
 ## Change File Format
 
-Task files live in `docs/tasks/` as markdown with YAML frontmatter.
+Task files live in `docs\tasks\` as markdown with YAML frontmatter.
 
 ```markdown
 ---
@@ -89,11 +89,11 @@ priority: high
 - `done` — complete (note this state must be selected by a human not ralphy)
 - `blocked` — needs human input; skip
 
-**Selecting the next task:** Read every `docs/tasks/*.md` with `status: todo`. Skip `draft` and `blocked`. Check for declared dependencies ("depends on X", "after Y ships") — skip if the named dependency isn't `done`. From what remains, pick the task that best unblocks downstream work. Use `priority` as the primary signal; break ties with the oldest `created` date. State your pick and a one-line rationale before claiming it.
+**Selecting the next task:** Read every `docs\tasks\*.md` with `status: todo`. Skip `draft` and `blocked`. Check for declared dependencies ("depends on X", "after Y ships") — skip if the named dependency isn't `done`. From what remains, pick the task that best unblocks downstream work. Use `priority` as the primary signal; break ties with the oldest `created` date. State your pick and a one-line rationale before claiming it.
 
-## `docs/backlog.md` Entry Format
+## `docs\backlog.md` Entry Format
 
-When any agent finds an issue outside the current task scope, they add to `docs/backlog.md`:
+When any agent finds an issue outside the current task scope, they add to `docs\backlog.md`:
 
 ```markdown
 - [ ] **<Short title>** — <One sentence description of the issue and where it was found (file:line if applicable).> _(found during: <task title>)_
@@ -101,36 +101,36 @@ When any agent finds an issue outside the current task scope, they add to `docs/
 
 ## State Files
 
-Ralph persists intermediate state to `.ralphy.donotcommit/` in the project root so that recovery after a crash is deterministic rather than guesswork.
+Ralphy persists intermediate inside the folder `.donotcommit\` in the repository root so that recovery after a crash is deterministic rather than guesswork.  If you are not inside a repository use the system temporary path.
 
 | File | Written | Contains |
 |------|---------|----------|
-| `.ralphy.donotcommit/current-task.md` | On Start | Path to the claimed task file and the task slug |
-| `.ralphy.donotcommit/current-plan.md` | After Stage 1 | Full `<PLAN>` verbatim |
-| `.ralphy.donotcommit/audit.md` | After each stage | Timestamped summary of what each agent did and decided |
+| `.donotcommit\current-task.md` | On Start | Path to the claimed task file and the task slug |
+| `.donotcommit\current-plan.md` | After Stage 1 | Full `<PLAN>` verbatim |
+| `.donotcommit\audit.md` | After each stage | Timestamped summary of what each agent did and decided |
 
-`.ralphy.donotcommit/` should be in `.gitignore`. These files are scratch state, not source of truth.
+`.donotcommit\` should be in `.gitignore`. These files are scratch state, not source of truth.
 
-On a clean exit (Mark Done or blocked), delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`. Leave `audit.md` intact — it is useful post-run.
+On a clean exit (Mark Done or blocked), delete `.donotcommit\current-task.md` and `.donotcommit\current-plan.md`. Leave `audit.md` intact — it is useful post-run.
 
 ## On Start
 
-1. **Verify `docs/tasks/` exists.** If not, exit: `No task queue found at docs/tasks/. Nothing to do.`
+1. **Verify `docs\tasks\` exists.** If not, exit: `No task queue found at docs\tasks\. Nothing to do.`
 2. **Read `ralphy-override.md`** if present.
 3. **Check git state.** Run `git status` and `git log -1 --oneline`. Confirm the working tree is clean before starting — do not proceed over uncommitted changes from a previous session.
 4. **Look for a `doing` task first.** If one exists, go to Recovery before picking anything new.
 5. **Pick the next task** (see selection rules above), or if an argument was passed (a filename slug like `add-search-box`), pick that specific task — still validate it is `todo` or `doing`.  If a reference id was passed as an argument then use that.
 6. **Claim the task:** edit frontmatter `status: todo` → `status: doing`. Do not commit this alone.
-7. **Write `.ralphy.donotcommit/current-task.md`** with the task file path and slug.
+7. **Write `.donotcommit\current-task.md`** with the task file path and slug.
 
 ## Recovery (a `doing` task exists)
 
 A previous run claimed this task and didn't finish.
 
 1. Read the task file in full, including any `## Notes`.
-2. Check for `.ralphy.donotcommit/current-plan.md` — if it exists, the Planner already completed; skip Stage 1 and use the saved plan as `<PLAN>`.
+2. Check for `.donotcommit\current-plan.md` — if it exists, the Planner already completed; skip Stage 1 and use the saved plan as `<PLAN>`.
 3. Run `git diff` and `git status`.
-4. Run all unit tests (`.Test` projects only — not integration tests).
+4. Run all unit tests.
 
 | Working tree | Unit tests | Likely state                   | Action                                             |
 |--------------|------------|--------------------------------|----------------------------------------------------|
@@ -163,11 +163,11 @@ Invoke the **Planner** sub-agent with this context:
 
 **If the Planner raises a clarification question:** pause the loop, surface the question to the user, wait for an answer, then re-invoke the Planner with the original context plus the user's answer appended. Do not proceed to Stage 2 until the plan is complete.
 
-**If the plan notes the task is too large:** split the task file into multiple smaller files in `docs/tasks/`, mark the original `done` with a note explaining the split, and exit. The split tasks will be picked up in subsequent runs.
+**If the plan notes the task is too large:** split the task file into multiple smaller files in `docs\tasks\`, mark the original `done` with a note explaining the split, and exit. The split tasks will be picked up in subsequent runs.
 
-Capture the Planner's full output as **`<PLAN>`**. Save it verbatim to `.ralphy.donotcommit/current-plan.md`.
+Capture the Planner's full output as **`<PLAN>`**. Save it verbatim to `.donotcommit\current-plan.md`.
 
-Append to `.ralphy.donotcommit/audit.md`:
+Append to `.donotcommit\audit.md`:
 ```
 ## Stage 1 — Plan [<timestamp>]
 Status: complete
@@ -199,7 +199,7 @@ Capture the validated output as **`<CODER_REPORT>`**.
 
 **If the Coder escalates to blocked:** revert all implementation changes (`git checkout .` and `git clean -fd`), append `## Notes`, flip status to `blocked`, commit the task file alone (status record only), and exit.
 
-Append to `.ralphy.donotcommit/audit.md`:
+Append to `.donotcommit\audit.md`:
 ```
 ## Stage 2 — Build [<timestamp>] (cycle <N>)
 Build: <clean|errors>
@@ -226,7 +226,7 @@ Capture the Tester's full output as **`<TEST_REPORT>`**.
 
 **If the Tester escalates to Planner:** surface the ambiguity to the user (Planner cannot re-plan mid-loop without human input). Pause, get the answer, re-invoke Planner if needed, then restart from Stage 2.
 
-Append to `.ralphy.donotcommit/audit.md`:
+Append to `.donotcommit\audit.md`:
 ```
 ## Stage 3 — Test [<timestamp>] (cycle <N>)
 Acceptance criteria covered: <N>/<total>
@@ -241,7 +241,7 @@ Escalation: <none|coder|planner>
 ### Stage 4 — Review
 
 Before invoking the Reviewer, discover the project documentation location:
-- Check for `docs/spec.md`, `docs/README.md`, or any `.md` file in `docs/` that describes intended behaviour.
+- Check for `docs\spec.md`, `docs\README.md`, or any `.md` file in `docs\` that describes intended behaviour.
 - Note the path (or "none found") as **`<DOCS_PATH>`**.
 
 Invoke the **Reviewer** sub-agent with this context:
@@ -258,7 +258,7 @@ Invoke the **Reviewer** sub-agent with this context:
 
 **If the Reviewer verdict is PASS:** proceed to Mark `coded`.
 
-Append to `.ralphy.donotcommit/audit.md`:
+Append to `.donotcommit\audit.md`:
 ```
 ## Stage 4 — Review [<timestamp>] (cycle <N>)
 Verdict: <PASS|FAIL>
@@ -274,18 +274,7 @@ Escalation: <none|coder>
 2. Run the full build and test suite one final time (unit + integration). This is a sanity check — not a new review cycle. If it fails, investigate; do not silently mark done.
 3. Do not commit any changes.  
 
-**Commit message format:**
-```
-<type>: <task title>
-
-<One sentence from the Reviewer's changelog entry.>
-
-Task: docs/tasks/<filename>.md
-```
-
-Where `<type>` is one of: `feat` (new feature), `fix` (bug fix), `refactor` (restructuring), `test` (tests only), `chore` (tooling/config).
-
-4. Clean up state files: delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`.
+4. Clean up state files: delete `.donotcommit\current-task.md` and `.donotcommit\current-plan.md`.
 5. **Exit.** Report to the user: `Done: <task title>. <N> tests passing, <M> warnings. Ready for your review.` Do not pick up the next task automatically.
 
 > **Why one task per invocation?** Each run gets a clean context window and a human checkpoint. Auto-looping compounds blast radius, degrades reasoning quality as context grows, and skips the queue re-prioritisation the user may want to do between tasks. Re-invoke ralphy to continue.
@@ -296,11 +285,11 @@ Where `<type>` is one of: `feat` (new feature), `fix` (bug fix), `refactor` (res
 2. Append `## Notes` to the task file describing what you tried and what needs a human decision.
 3. Flip status to `blocked`.
 4. Commit the task file alone (status record only — no implementation code).
-5. Clean up state files: delete `.ralphy.donotcommit/current-task.md` and `.ralphy.donotcommit/current-plan.md`.
-6. Exit with one line: `Blocked on <task title>. See ## Notes in docs/tasks/<filename>.md.`
+5. Clean up state files: delete `.donotcommit\current-task.md` and `.donotcommit\current-plan.md`.
+6. Exit with one line: `Blocked on <task title>. See ## Notes in docs\tasks\<filename>.md.`
 
 ## Scope Discipline
 
 - One task per run. Always.
-- Do not refactor surrounding code. Log findings to `docs/backlog.md`.
+- Do not refactor surrounding code. Log findings to `docs\backlog.md`.
 - If a task is too large to complete in one bounded run, split it during the Plan stage (see Stage 1).

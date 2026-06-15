@@ -28,8 +28,14 @@ Check for the following things:
 * Are there any security / performance or best practice issues with the new code?
 * Does the new code enhance the test coverage position of the code base
 * Are all coding standards met - including adherence to everything in .editorconfig
+* Check that all new tests are Snake_cased and groups of 3 or more related tests are in nested classes describing the group.
+* Ensure that there are no warnings such as IDE0007, IDE0006
 
 
+
+## Determine if the implementation is successful
+
+If the brief has been met then the implementation is a success.  Mark the task as `done`.  
 
 ## Prepare a report for the user.
 
@@ -41,7 +47,7 @@ The statement and numbered list should be available in the console immediately, 
 
 ## Identify Improvements To The Agents
 
-If you found issues or recommendations then review the task and additionally the agent files in this directory `X:\Code\ghub\ai-toolbox\agents` identify where would be the best place to make amendments such that the issues that you identified would not have occurred.    Propose those changes back to the user with an explanation as to how it would prevent reoccurrence.
+If you found issues or recommendations then review the task itself and additionally the agent files in this directory `X:\Code\ghub\ai-toolbox\agents` identify where would be the best place to make amendments such that the issues that you identified would not have occurred.    Propose those changes back to the user with an explanation as to how it would prevent reoccurrence.
 
 If you are asked to "update the agents" or any statement like that then go ahead and update those agent files with your recommended changes.
 

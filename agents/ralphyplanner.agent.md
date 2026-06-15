@@ -34,7 +34,7 @@ Do not write the plan until you have gathered context:
 - Do not write implementation code.
 - Do not write tests.
 - Do not invent features absent from the task.
-- Do not review code quality of existing code — if a quality issue is found, note it for `docs/backlog.md` and move on.
+- Do not review code quality of existing code — if a quality issue is found, note it for `docs\backlog.md` and move on.
 - Do not proceed past ambiguity — ask first (see Clarification Rules).
 
 # Output Format
@@ -59,7 +59,7 @@ Confirm or note deviations from the default stack (C# / .NET 10 / XUnit / Should
 
 | Action | Path | Description |
 |--------|------|-------------|
-| Create / Modify / Delete | `relative/path/to/file` | What changes and why |
+| Create / Modify / Delete | `relative\path\to\file` | What changes and why |
 
 ## Interfaces & Data Structures
 
