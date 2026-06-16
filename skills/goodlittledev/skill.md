@@ -1,7 +1,7 @@
 ---
 name: goodlittledev
 description: A healtcheck skill for repositories on disk to determine if they are in the correct state
-version: 1.0
+version: 1.1
 contact: jim
 ---
 
@@ -43,7 +43,17 @@ These are the common files that are to be used for comparison.
 
 ## Checks
 
-Using the repobasepaths set of folders check each of the subdirectories under each of those base paths, you are to prepare a report on each of the repositories found.  The report will contain the following information, where the first line is provided as an example:
+To execute the checks, you MUST run the automated PowerShell script located in the skill's scripts directory:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File "./scripts/generate_final_report.ps1" -ArtifactPath "<current-conversation-artifact-dir>/goodlittledev_report.md"
+```
+
+Replace `<current-conversation-artifact-dir>` with the current conversation's artifact directory (e.g., `~/.gemini/antigravity-cli/brain/<conversation-id>`).
+
+The script automatically performs all of the Git status checks and common file comparisons specified below, and writes the output directly to the specified `goodlittledev_report.md` artifact.
+
+The generated report will contain the following information, where the first line is provided as an example:
 
 | Repo Name    | Current Status | Common Files             | Reference | Full Path            |
 | ------------ | -------------- | ------------------------ | --------- | -------------------- |
@@ -51,7 +61,7 @@ Using the repobasepaths set of folders check each of the subdirectories under ea
 |              |                |                          |           |                      |
 |              |                |                          |           |                      |
 
-You will gain the information for the report using the following info.
+You can use the script's output to compile the information, which is gathered using the following rules.
 
 The reference is a straight forward sequential integer number starting at 1.
 
@@ -89,3 +99,18 @@ If good little dev instructions note a file as an exception use this icon ❕
 
 
 
+### Offer To Correct.
+
+Allow the user to review the report.  Once they have had a chance to review the report the proceed with offer to correct.
+
+For any repositories which are "fine" but have out dated common files offer to fix them.  You can fix out of sync or missing files, but not the ones that are exceptions.  You should only fix in repositories which are "fine".   Always ask the user if they want the fix applied.  If they say no then take no further action.
+
+If they agree then proceed:
+
+* If there is an out of date `.gitignore` file, then replace it with the contents of the `common.gitignore` file that you downloaded.  If it is missing place it in the root of the repository.
+* If there is an out of date  `nuget.config` file, then replace it with the contents of the primary `common.nuget.config` that you downloaded.  If it is missing locate a src directory and place it in there.  If there is no src directory take no action.
+* If there is an out of date `.editorconfig`  file, then replace it with the contents of the primary `common.editorconfig` that you downloaded. If it is missing locate a src directory and place it in there.  If there is no src directory take no action.
+
+
+
+For any repository that you have made changes commit those changes, ensuring only that the primary files are in the commit.  Use the message "Auto correct out of date primary files (ai)".  Push the changes.  Update the report to change the current status to (fixed).
