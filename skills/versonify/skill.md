@@ -1,8 +1,9 @@
 ---
 name: versonify
 description: A versioning skill that uses the versonify command line tooling to manage version numbers.
-version: 1.0
-contact: jim
+metadata:
+  author: jim
+  version: "1.0"
 ---
 
 # Versonify
@@ -34,7 +35,7 @@ Version numbers are made up of a series of digits, if the user askes you to upda
 
 ## Capabilities.
 
-With this skill you can do several things related to versioning.  
+With this skill you can do several things related to versioning.  The versioning activities rely on a tool called versonify.  
 
 
 
@@ -103,4 +104,3 @@ Therefore given the version number 1.2.3.4 applying +.-.1.1 to it would result i
 
 
 #### Create a versonify configuration file  ( or mm file )
-

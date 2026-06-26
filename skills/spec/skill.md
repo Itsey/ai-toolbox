@@ -1,8 +1,9 @@
 ---
 name: spec
 description: A specification skill to shape and map out a feature to be built.
-version: 2.0
-contact: jim
+metadata:
+  author: jim
+  version: "2.0"
 ---
 
 # Spec

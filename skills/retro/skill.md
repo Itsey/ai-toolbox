@@ -1,8 +1,9 @@
 ---
 name: retro
 description: End-of-session retrospective. Reviews the conversation for corrections, friction, and wasted effort, then proposes durable improvements to skills and rules. Use at end of sessions or when user says "retro", "start a retro", "run a retro". PROACTIVE - if the conversation has repeated corrections or mounting friction, suggest running /retro and restarting the session.
-version: 2.0
-contact: jim
+metadata:
+  author: jim
+  version: "2.0"
 ---
 
 # Session Retrospective

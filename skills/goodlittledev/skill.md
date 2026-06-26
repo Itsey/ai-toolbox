@@ -1,8 +1,9 @@
 ---
 name: goodlittledev
 description: A healtcheck skill for repositories on disk to determine if they are in the correct state
-version: 1.1
-contact: jim
+metadata:
+  author: jim
+  version: "1.1"
 ---
 
 # GoodLittleDev

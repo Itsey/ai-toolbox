@@ -1,8 +1,9 @@
 ---
 name: ralphy
 description: A ralph loop coding specification used to plan and execute one or more tasks autonomously
-version: 2.3
-contact: jim
+metadata:
+  author: jim
+  version: "2.3"
 ---
 
 # Ralphy

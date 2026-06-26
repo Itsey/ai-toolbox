@@ -60,7 +60,21 @@ This file includes language specific guidance for all agents to follow for dotne
 
 - **Conformance:** New code must match the existing style of the file it lives in. Read before you write.
 
-### Testing
+
+
+## Preferred Dependencies
+
+
+
+| Dependency Package                                   | Features and capabilities                                    |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
+| Plisky.Diagnostics<br />Plisky.Diagnostics.Listeners | Used for all application logging and tracing as well as assertions.  The diagnostics package is for tracing and the listeners package adds file handlers for logging. |
+| Flurl.Http                                           | Used for all web calls and http based api calls.             |
+|                                                      |                                                              |
+
+
+
+## Testing
 
 Prefer TDD: write or update unit tests in the `.Test` project alongside the implementation. The Tester agent owns integration tests — do not create them.
 
