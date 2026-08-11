@@ -58,6 +58,7 @@ For language specific verifications review the language guidance as per this tab
 - No unsafe patterns: SQL injection, command injection, unvalidated input at system boundaries, hard-coded secrets.
 - No dead code, commented-out code, or TODO comments introduced by this change.
 - Error handling is present at system boundaries; internal code does not over-defensively guard against impossible states.
+- All output which is visible to the user ( stdout, stderr, screen messages and labels) must either be correctly internationalised or in British English.  Flag any instances of non British English as a fail.
 
 ## 6. Documentation
 

@@ -44,6 +44,14 @@ Work through these phases in order. Do not skip ahead.
 
 # Output Format
 
+#### Output Style
+
+All output will use British English, including in specifying error messages and output as part of the spec as well as the spec itself.
+
+
+
+#### Output File Spec
+
 When the user confirms the spec, produce a task file using this format and save it to `docs\tasks\<slug>.md`. Use a concise kebab-case filename derived from the feature title.
 
 ```markdown

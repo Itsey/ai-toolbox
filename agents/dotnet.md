@@ -10,6 +10,9 @@ This file includes language specific guidance for all agents to follow for dotne
 - **Framework:** .NET 10 or later for new projects. Do not upgrade an existing project unless the plan explicitly says to.
 - **Web:** ASP.NET Core for web applications.
 - **DI:** Dependency Injection for all service dependencies.
+- **Use CR-LF as line feeds**: Update any files that do not have them to use CR-LF and always use CR-LF for your own code.
+
+
 
 ### Coding Standards
 
@@ -66,11 +69,11 @@ This file includes language specific guidance for all agents to follow for dotne
 
 
 
-| Dependency Package                                   | Features and capabilities                                    |
-| ---------------------------------------------------- | ------------------------------------------------------------ |
-| Plisky.Diagnostics<br />Plisky.Diagnostics.Listeners | Used for all application logging and tracing as well as assertions.  The diagnostics package is for tracing and the listeners package adds file handlers for logging. |
-| Flurl.Http                                           | Used for all web calls and http based api calls.             |
-|                                                      |                                                              |
+| Dependency Package                                 | Features and capabilities                                    |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| Plisky.Diagnostics    Plisky.Diagnostics.Listeners | Used for all application logging and tracing as well as assertions.  The diagnostics package is for tracing and the listeners package adds file handlers for logging. |
+| Flurl.Http                                         | Used for all web calls and http based api calls.             |
+|                                                    |                                                              |
 
 
 
