@@ -16,7 +16,7 @@ This skill works with the versonify.exe command line too to manage versions and 
 
 The command versonify should be available to use this skill.  If it is not then it should be installed as a global tool from Nuget by running a dotnet global tool install command for the package `plisky.versonify`.  If you are unable to install the tool then do not proceed but instead notify the user that without versonify this skill can not proceed.  Highlight any errors that were caused when trying to install the tool.
 
-Execute the command `versonify.exe --qqpnf` and identify the exit code.  This should be 201.  The exit code 201 indicates that it is a compatible with this skill. If another exit code is returned notify the user that they must update versonify and the skill.
+Execute the command `versonify.exe --qqpnf` and identify the exit code.  This should be 201 or greater.  The exit code 201 indicates that it is a compatible with this skill. If an exit code of less than 201 is returned notify the user that they must update versonify and the skill.
 
   
 
@@ -61,11 +61,13 @@ If you have more than one version source for the commands you may need to ask th
 
 ## Capabilities.
 
-With this skill you can do several things related to versioning.  The versioning activities rely on a tool called versonify.  
+With this skill you can do several things related to versioning.  The versioning activities rely on a tool called versonify.  Whenever you are executing the tool `versonify` then add the output specifier `-o=jcon` this will write out json formatted output to stdout and stderr to help make the output more explicit.  
 
+The json formatted output has a `messagecategory` identifier to inform you of the type of messages with the following types:
 
-
-
+* `information` textual information about the activities
+* `result` the final result including any version number.
+* `error` an error in processing with an `errorid` in the meta key values.
 
 
 
@@ -87,10 +89,6 @@ The version store, the current and next versions and which files would be update
 
 
 
-
-
-
-
 #### List the current Version.
 
 If the user asks for the current version or wants to know what the current version number is then this can be achieved by executing the versonify command as follows:
@@ -109,15 +107,19 @@ versonify
 
 #### Create a new version
 
+To create a version specify the new version store and use -q to set the value of digits.  If a release name is used use --release. 
+
 ```cmd
-versonify CreateVersion  -vs=<versionsource>
+versonify --command=CreateVersion -v="%TEMP%\bugrepro2.store" -Q="<major>.<minor>.<build>.<revision>" --release=<name>
 ```
 
 
 
-#### Increment the current version
+#### Set the current version
 
-
+```cmd
+versonify --command=set -v="%TEMP%\bugrepro2.store" -Q="1.2.3.4" 
+```
 
 #### Queue an increment for the current version
 

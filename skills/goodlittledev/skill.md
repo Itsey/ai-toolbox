@@ -8,7 +8,7 @@ metadata:
 
 # GoodLittleDev
 
-This skill checks for standard practices across multiple repositories.
+This skill checks for standard practices at strategic points.  Good Little Dev will try and work out what to do as a skill but will check if not sure.
 
 
 
@@ -24,8 +24,6 @@ Ask the user if they are using primary files, and if they are then whether it is
 
 If the file exists then assume that it is correct and proceed to the preparation.
 
-
-
 ## Preparation
 
 If there is a primary files section in the configuration file retrieve the primary files.
@@ -39,6 +37,57 @@ curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfile
 ```
 
 These are the common files that are to be used for comparison.
+
+
+
+## Activities
+
+This skill can either run in pre-commit mode or multi repo mode.  If either mode is specified in the call to the command use that.  If not use the following logic:  
+
+* If the current folder is a repository where there are uncommitted files then it should default to pre-commit mode.
+* If the current folder is not a repository then it should default to multi repo mode.
+* If not sure ask the user.
+
+
+
+## Pre-Commit (or precommit) Mode
+
+You are to run a check prior to a commit happening to check for any issues.  These are the stages for the default check but the user may ask you to skip some of the checks.
+
+* Check for a clean compile, in Debug and Release mode.
+* Check that all unit tests run.
+* Perform a git `fetch` and ensure that there are no changes in the remote. If the `fetch` identified new changes warn the user in the report, stash all local changes, perform a `pull` and then un-stash local changes and tell the user specifically if there were any changes to files that have modifications.
+* Look for any compiler warnings in the changed files and specifically call out whether any of the new warnings have been introduced by the code changes.  If there are existing warnings flag those too.
+* Check that all of the line endings are consistent CRLF line endings on all of the changed files.
+* Look for any hard coded credentials or secrets in the files that are changed. If there are credentials in a modified file and that file is a configuration file such as app.config or web.config then git `stash` the changes to the file in a stash called `local changes stached prior to commit`
+* Ensure that any CSProj where there are changed files has a reference to Microsoft.CodeAnalysis.NetAnalzers.
+
+
+
+**Code formatting check:**
+
+Run the following formatting commands on each file that has changed, using the project name for the project where the file has changed.  For the jb command use the solution name and a relative path from the solution to the filename to include.
+
+Check for a `<solutionname>.dotsettings` file before running.  If it is not present warn the user that the JB cleanup wont work.
+
+````
+dotnet format analyzers <projectname> --include <filename>
+jb cleaupcode <solutionname> --include=<filename> --profile=plisky
+````
+
+
+
+**Commit Message Report:**
+
+Generate a summary report in the chat highlighting as warnings ⚠️ any new issues introduced and as ❗errors any compiler errors or failing unit tests.  Highlight for info ℹ️ any other warnings in changed files.
+
+Give a quick summary of the changes that are made too for the commit message. Keep the summary short and factual in bullet point form, just highlighting what has changed.  
+
+
+
+## Multi Repo Mode
+
+Multi Repo mode runs a series of checks across multiple repositories - use the following sequence:
 
 
 
