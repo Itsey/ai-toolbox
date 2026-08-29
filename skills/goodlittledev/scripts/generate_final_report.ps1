@@ -67,14 +67,20 @@ function Compare-Files {
     return $c1 -eq $c2
 }
 
-# Find gld.config in home or profile directory
-$configPath = Join-Path $HOME "gld.config"
+# Find gld.config in gld directory, home or profile directory
+$configPath = Join-Path $HOME "gld\gld.config"
+if (-not (Test-Path $configPath)) {
+    $configPath = Join-Path $HOME "gld.config"
+}
+if (-not (Test-Path $configPath)) {
+    $configPath = Join-Path $env:USERPROFILE "gld\gld.config"
+}
 if (-not (Test-Path $configPath)) {
     $configPath = Join-Path $env:USERPROFILE "gld.config"
 }
 
 if (-not (Test-Path $configPath)) {
-    Write-Error "Could not locate gld.config in $HOME or $env:USERPROFILE"
+    Write-Error "Could not locate gld.config in $HOME\gld, $HOME or $env:USERPROFILE"
     exit 1
 }
 
@@ -156,6 +162,13 @@ foreach ($basepath in $config.repobasepaths) {
                 $commonEditorconfig = Join-Path $baseCommonPath "common.editorconfig"
                 $commonNuget = Join-Path $baseCommonPath "common.nuget.config"
                 
+                $gldCache = Join-Path $HOME "gld"
+                if (Test-Path (Join-Path $gldCache "common.gitignore")) {
+                    $commonGitignore = Join-Path $gldCache "common.gitignore"
+                    $commonEditorconfig = Join-Path $gldCache "common.editorconfig"
+                    $commonNuget = Join-Path $gldCache "common.nuget.config"
+                }
+
                 # If they are not in parent, try disk folder if specified in primaryfiles
                 if ($config.primaryfiles -and $config.primaryfiles.type -eq "disk") {
                     $commonGitignore = Join-Path $config.primaryfiles.folder "common.gitignore"

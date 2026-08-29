@@ -14,29 +14,42 @@ This skill checks for standard practices at strategic points.  Good Little Dev w
 
 ## Prerequisites
 
-Locate the file `~\gld.config` if it is not present then use the following approach to create the file.  
+Locate the file `~\gld\gld.config` if it is not present then check whether `~\gld.config` is present. If it is move it into `~\gld\gld.config` if the file still is not found then use the following approach to create the file:
 
 The file is a json configuration file with the following settings:
 
-Ask the user for one or more repository locations.  These will be added to an array of strings in the config file called repobasepaths.  
+Ask the user for one or more repository locations.  These will be added to an array of strings in the config file called repobasepaths.  Explain to the user that they should enter one or more parent folders, within which are all of the repository folders that they regularly use.  
 
 Ask the user if they are using primary files, and if they are then whether it is a disk or nexus path.  If it is a disk path they should provide the folder that the primary  files are in.  If they are using nexus then ask for a server path, port,username and password.  Create a primaryfiles element in the config file, add the relevant details.
 
 If the file exists then assume that it is correct and proceed to the preparation.
 
+Notify the user that setup is complete and that the skill can run in precommit mode or multirepository mode. 
+
 ## Preparation
 
 If there is a primary files section in the configuration file retrieve the primary files.
 
-Use the following commands to download from nexus the common files:
+The primary files have a version.  Look in the solution for a build.cs in a nuke project.  Identify the value for a variable called something like `MollyRulesVersion` this will be passed into the step where mollycoddle is called, usually with code like the following where the value of MollyRulesVersion is passed into AddRulsetVersion.  
 
 ```
-curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/default/common.gitignore"
-curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/default/common.editorconfig"
-curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/default/common.nuget.config"  
+           if (!string.IsNullOrEmpty(settings.MollyRulesVersion)) {
+               mcs.AddRulesetVersion(settings.MollyRulesVersion);
+           }
 ```
 
-These are the common files that are to be used for comparison.
+If you are unable to work out the version or can not find evidence of it then use the term `default` for the version.
+
+Use the following commands to download from nexus the common files, replacing `<version>` with the version you identified:
+
+```
+curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/<version>/common.gitignore"
+curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/<version>/common.editorconfig"
+curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/<version>/common.nuget.config"  
+curl -u <username>:<password> -L -O "<nexusserver>/repository/plisky/primaryfiles/<version>/common.sln.dotsettings"  
+```
+
+These are the common files that are to be used for comparison.  Place each file inside the `~\gld\` directory.  This is the cache that you will use for common files.  Update `gld.config` with the date when the cache was refreshed.  Refresh the cache using the downloads once a week or if the user asks you to.  
 
 
 
@@ -74,6 +87,12 @@ Check for a `<solutionname>.dotsettings` file before running.  If it is not pres
 dotnet format analyzers <projectname> --include <filename>
 jb cleaupcode <solutionname> --include=<filename> --profile=plisky
 ````
+
+
+
+**Common Files Check.**
+
+If this is the first run of the session perform the common file check as below. There is no need to repeat this for repeated runs.
 
 
 
@@ -134,6 +153,7 @@ For each of the common files that you are to check locate them by starting your 
 * Locate a  `.gitignore` file, and compare it against the primary `common.gitignore` file that you downloaded.
 * Locate  a `nuget.config` file and compare it against against the primary `common.nuget.config` 
 * Locate a `.editorconfig`  file and compare it against against `common.editorconfig` 
+* Locate a `<solutionname>.sln.dotsettings` file and compare it against `common.sln.dotsettings`
 
 
 
@@ -142,6 +162,7 @@ If any of these do not match then the common files status is "outdated", if they
 * `.gitignore` should be abbreviated to `.gi` with ❌for out of sync and ✅for the same.  If the file is not present use 🗑️
 * `.editorconfig` should be abbreviated to `.ec` with ❌for out of sync and ✅for the same. If the file is not present use 🗑️
 * `nuget.config` should be abbreviated to `ngt` with ❌for out of sync and ✅for the same.  If the file is not present use 🗑️
+* `<solution>.sln.dotsettings` should be abbreviated to .st with ❌for out of sync and ✅for the same.  If the file is not present use 🗑️
 
 This info should be included in the common files column.
 
@@ -160,6 +181,7 @@ If they agree then proceed:
 * If there is an out of date `.gitignore` file, then replace it with the contents of the `common.gitignore` file that you downloaded.  If it is missing place it in the root of the repository.
 * If there is an out of date  `nuget.config` file, then replace it with the contents of the primary `common.nuget.config` that you downloaded.  If it is missing locate a src directory and place it in there.  If there is no src directory take no action.
 * If there is an out of date `.editorconfig`  file, then replace it with the contents of the primary `common.editorconfig` that you downloaded. If it is missing locate a src directory and place it in there.  If there is no src directory take no action.
+* If there is a missing `<solution>.sln.dotsettings` file copy the common.sln.dotsettings file and rename common to be the solution name.  Ensure that this is repeated for each solution in the directory.
 
 
 
