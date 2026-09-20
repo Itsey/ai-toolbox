@@ -29,7 +29,9 @@ This file includes language specific guidance for all agents to follow for dotne
 
 - **Types:** Use the explicit type for built-in types (`int`, `string`, `bool`). Use `var` for all other types (IDE0008).
 
-- **Braces:** One True Brace Style throughout.
+- **Braces:** One True Brace Style throughout, see style reference for details.
+
+- **Namespaces**: Always use file scoped namespaces.
 
 - **Style reference:**
   Always check for and meet IDE1006 rule violations.  Never allow an IDE1006 violation to remain in the code.
